@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"os"
+	"strconv"
 
 	"github.com/sirupsen/logrus"
 )
@@ -22,17 +23,27 @@ func (s *service) LoadConfig(fileName string) (*Config, error) {
 		if !exists {
 			return nil, errors.New("cannot find env variable CF_TOKEN")
 		}
-		consulToken, exists := os.LookupEnv("CONSUL_TOKEN")
-		if !exists {
-			return nil, errors.New("cannot find env variable CONSUL_TOKEN")
-		}
-
 		domainaName, exists := os.LookupEnv("DOMAIN_NAME")
-		if exists {
+		if !exists {
 			return nil, errors.New("cannot find env variable DOMAIN_NAME")
 		}
 
-		return &Config{ConsulToken: consulToken, CloudflareToken: cfToken, DomainName: domainaName}, nil
+		hostTimeout, exists := os.LookupEnv("HOST_LIVENESS_TIMEOUT")
+		if !exists {
+			return nil, errors.New("cannot find env variable HOST_LIVENESS_TIMEOUT")
+		}
+		hostTimeoutInt, err := strconv.ParseInt(hostTimeout, 10, 32)
+		if err != nil {
+			return nil, errors.New("incorrect HOST_LIVENESS_TIMEOUT value")
+
+		}
+
+		logLevel, exists := os.LookupEnv(("LOG_LEVEL"))
+		if !exists {
+			return nil, errors.New("cannot find env variable LOG_LEVEL")
+		}
+
+		return &Config{CloudflareToken: cfToken, DomainName: domainaName, HostTimeout: int(hostTimeoutInt), LogLevel: logLevel}, nil
 
 	}
 

@@ -1,6 +1,10 @@
 package statestore
 
-import "github.com/sirupsen/logrus"
+import (
+	"time"
+
+	"github.com/sirupsen/logrus"
+)
 
 type service struct {
 	r Repository
@@ -28,5 +32,25 @@ func (s *service) CheckIfModified(hostname string, index int) (bool, error) {
 
 func (s *service) SaveState(hostname string, index int) error {
 	return s.r.SetModifyIndex(hostname, index)
+
+}
+
+func (s *service) GetStalledHosts(timeTreshold int) ([]string, error) {
+	return s.r.GetOutdatedHosts(time.Duration(timeTreshold) * time.Second)
+
+}
+
+func (s *service) PurgeStalledHosts(timeTreshold int) error {
+	logrus.Debugf("statestore: PurgeStalledHosts: %d", timeTreshold)
+	hosts, err := s.r.GetOutdatedHosts(time.Duration(timeTreshold) * time.Second)
+	if err != nil {
+		return err
+	}
+
+	logrus.Debugf("statestore: PurgeStalledHosts: %+v", hosts)
+
+	s.r.DeleteHosts(hosts)
+
+	return nil
 
 }

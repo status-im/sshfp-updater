@@ -63,6 +63,23 @@ func (s *service) GetSSHFPRecordsForHost(hostname string) ([]*sshfp.SSHFPRecord,
 	return output, nil
 }
 
+func (s *service) DeleteSSHFPRecordsForHost(hostname string) error {
+	logrus.Debugf("cloudflare: DeleteSSHFPRecordsForHost: %s", hostname)
+	records, err := s.GetSSHFPRecordsForHost(hostname)
+	if err != nil {
+		return err
+	}
+
+	for _, record := range records {
+		err := s.DeleteSSHFPRecord(hostname, *record)
+		if err != nil {
+			return nil
+		}
+	}
+	return nil
+
+}
+
 func (s *service) CreateSSHFPRecord(hostname string, record sshfp.SSHFPRecord) (int, error) {
 	logrus.Infof("cloudflare: CreateSSHFPRecord: %+v", record)
 

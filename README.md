@@ -16,7 +16,8 @@ go build -mod vendor
 Supported env variables:
 `DOMAIN_NAME` - Domain name which will be working on
 `CF_TOKEN` - CloudFlare Token with write access to above domain
-`CONSUL_TOKEN` - Consul Token with priviledges to read services
+`HOST_LIVENESS_TIMEOUT` - number in seconds after which host is 
+considered as removed and dns records can be deleted
 
 It's possible to create json formatted config file (example in `testcfg`)
 

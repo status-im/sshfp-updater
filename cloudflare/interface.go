@@ -16,6 +16,7 @@ type Repository interface {
 type Service interface {
 	FindHostByName(hostname string) (bool, error)
 	GetSSHFPRecordsForHost(hostname string) ([]*sshfp.SSHFPRecord, error)
+	DeleteSSHFPRecordsForHost(hostname string) error
 	CreateSSHFPRecord(hostname string, record sshfp.SSHFPRecord) (int, error)
 	DeleteSSHFPRecord(hostname string, record sshfp.SSHFPRecord) error
 	UpdateSSHFPRecord(hostname string, record sshfp.SSHFPRecord) error

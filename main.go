@@ -6,17 +6,24 @@ import (
 	"infra-sshfp-cf/consul"
 	"infra-sshfp-cf/sshfp"
 	"infra-sshfp-cf/statestore"
+	"os"
 
 	"github.com/sirupsen/logrus"
 )
 
 func main() {
 	//Debug loglevel
-	logrus.SetLevel(logrus.InfoLevel)
+	logrus.SetLevel(logrus.DebugLevel)
 
 	//Create configuration components
+	// Get config file name from args, if empty - try to configure from ENVs
+	var configFilename string = ""
+	if len(os.Args) > 1 {
+		configFilename = os.Args[1]
+	}
+
 	cfgService := config.NewService(config.NewFileRepository())
-	config, err := cfgService.LoadConfig("testcfg")
+	config, err := cfgService.LoadConfig(configFilename)
 	if err != nil {
 		logrus.Fatal(err)
 	}
@@ -80,5 +87,16 @@ func main() {
 			}
 		}
 	}
+
+	//Purge old hosts
+	hosts, _ = statestore.GetStalledHosts(config.HostTimeout)
+	for _, host := range hosts {
+		err := cloudflare.DeleteSSHFPRecordsForHost(host)
+		if err != nil {
+			logrus.Fatalf("Cannot delete records for host: %s", host)
+		}
+
+	}
+	statestore.PurgeStalledHosts(config.HostTimeout)
 
 }
