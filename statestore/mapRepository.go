@@ -19,6 +19,11 @@ type mapRepository struct {
 }
 
 func NewMapRepository(filename string) Repository {
+
+	if filename == "" {
+		filename = "stateStore.json"
+	}
+
 	repo := new(mapRepository)
 	repo.filename = filename
 

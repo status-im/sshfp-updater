@@ -28,13 +28,13 @@ func (s *service) LoadConfig(fileName string) (*Config, error) {
 			return nil, errors.New("cannot find env variable DOMAIN_NAME")
 		}
 
-		hostTimeout, exists := os.LookupEnv("HOST_LIVENESS_TIMEOUT")
+		hostTimeout, exists := os.LookupEnv("HOST_TIMEOUT")
 		if !exists {
-			return nil, errors.New("cannot find env variable HOST_LIVENESS_TIMEOUT")
+			return nil, errors.New("cannot find env variable HOST_TIMEOUT")
 		}
 		hostTimeoutInt, err := strconv.ParseInt(hostTimeout, 10, 32)
 		if err != nil {
-			return nil, errors.New("incorrect HOST_LIVENESS_TIMEOUT value")
+			return nil, errors.New("incorrect HOST_TIMEOUT value")
 
 		}
 
@@ -43,7 +43,12 @@ func (s *service) LoadConfig(fileName string) (*Config, error) {
 			return nil, errors.New("cannot find env variable LOG_LEVEL")
 		}
 
-		return &Config{CloudflareToken: cfToken, DomainName: domainaName, HostTimeout: int(hostTimeoutInt), LogLevel: logLevel}, nil
+		storageFilePath, exists := os.LookupEnv(("STORAGE_FILEPATH"))
+		if !exists {
+			return nil, errors.New("cannot find env variable STORAGE_FILEPATH")
+		}
+
+		return &Config{CloudflareToken: cfToken, DomainName: domainaName, HostTimeout: int(hostTimeoutInt), LogLevel: logLevel, StorageFilePath: storageFilePath}, nil
 
 	}
 

@@ -44,7 +44,7 @@ func main() {
 	hosts := consul.GetHostnames()
 
 	//Open statestore
-	statestore := statestore.NewService(statestore.NewMapRepository("statestore.json"))
+	statestore := statestore.NewService(statestore.NewMapRepository(config.StorageFilePath))
 
 	//Iterate over hosts and check modify indexes
 	for _, hostname := range hosts {
