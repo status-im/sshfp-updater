@@ -1,7 +1,7 @@
 package config
 
 type Config struct {
-	//ConsulToken     string `json:"consulKey"`
+	ConsulToken     string `json:"consulToken"`
 	CloudflareToken string `json:"cloudflareKey"`
 	DomainName      string `json:"domain"`
 	HostTimeout     int    `json:"hostTimeout"`

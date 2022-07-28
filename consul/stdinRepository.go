@@ -3,19 +3,19 @@ package consul
 import (
 	"encoding/json"
 	"io"
-	"os"
 
 	"github.com/sirupsen/logrus"
 )
 
 type repo struct {
 	rawData []byte
+	reader  io.Reader
 }
 
 //Create new file repository satisfying Repository interface
-func NewStdinRepository() Repository {
+func NewStdinRepository(reader io.Reader) Repository {
 	logrus.Debug("consul: Creating stdin reader")
-	return &repo{}
+	return &repo{reader: reader}
 }
 
 //GetData - Load data from stdin and store in the memory
@@ -23,7 +23,7 @@ func (r *repo) GetData() error {
 	var err error
 	logrus.Debug("consul: GetData: Opening stdin")
 
-	rawData, err := io.ReadAll(os.Stdin)
+	rawData, err := io.ReadAll(r.reader)
 	if err != nil {
 		logrus.Fatal(err)
 	}

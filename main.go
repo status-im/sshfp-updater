@@ -1,20 +1,23 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
 	"infra-sshfp-cf/cloudflare"
 	"infra-sshfp-cf/config"
 	"infra-sshfp-cf/consul"
 	"infra-sshfp-cf/sshfp"
 	"infra-sshfp-cf/statestore"
 	"os"
+	"os/exec"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 )
 
 func main() {
 	//Debug loglevel
-	logrus.SetLevel(logrus.DebugLevel)
-
+	logrus.SetLevel(logrus.InfoLevel)
 	//Create configuration components
 	// Get config file name from args, if empty - try to configure from ENVs
 	var configFilename string = ""
@@ -28,11 +31,37 @@ func main() {
 		logrus.Fatal(err)
 	}
 
+	switch strings.ToLower(config.LogLevel) {
+	case "info":
+		logrus.SetLevel(logrus.InfoLevel)
+	case "debug":
+		logrus.SetLevel(logrus.DebugLevel)
+	default:
+		logrus.SetLevel(logrus.InfoLevel)
+	}
+
 	//Create cloudflare components
 	cloudflare := cloudflare.NewService(cloudflare.NewRepository(config.CloudflareToken, config.DomainName))
 
-	//Create STDIN Listener and start listening on (blocking operation)
-	consul := consul.NewService(consul.NewStdinRepository())
+	//Create buffer to catch output from consul
+	var buf bytes.Buffer
+
+	//Try run consul binary and catch output
+	logrus.Debug("Calling binary")
+	output, err := exec.Command("consul", "watch", "-type=service", "-service=sshd", "-token", config.ConsulToken, "-http-addr=http://127.0.0.1:8500").Output()
+
+	if err != nil {
+		logrus.Fatalf("Cannot run consul, error: %s", err)
+	}
+
+	//Store output to the buffer
+	buf.Write(output)
+
+	//Use bufio Reader to turn bytes buffer into reader
+	bufferedReader := bufio.NewReader(&buf)
+
+	//Create reader listener and start reading on (blocking operation)
+	consul := consul.NewService(consul.NewStdinRepository(bufferedReader))
 	err = consul.LoadData()
 
 	//Code below is executed upon data receipt

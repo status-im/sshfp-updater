@@ -23,6 +23,10 @@ func (s *service) LoadConfig(fileName string) (*Config, error) {
 		if !exists {
 			return nil, errors.New("cannot find env variable CF_TOKEN")
 		}
+		consulToken, exists := os.LookupEnv("CONSUL_TOKEN")
+		if !exists {
+			return nil, errors.New("cannot find env variable CF_TOKEN")
+		}
 		domainaName, exists := os.LookupEnv("DOMAIN_NAME")
 		if !exists {
 			return nil, errors.New("cannot find env variable DOMAIN_NAME")
@@ -48,7 +52,7 @@ func (s *service) LoadConfig(fileName string) (*Config, error) {
 			return nil, errors.New("cannot find env variable STORAGE_FILEPATH")
 		}
 
-		return &Config{CloudflareToken: cfToken, DomainName: domainaName, HostTimeout: int(hostTimeoutInt), LogLevel: logLevel, StorageFilePath: storageFilePath}, nil
+		return &Config{ConsulToken: consulToken, CloudflareToken: cfToken, DomainName: domainaName, HostTimeout: int(hostTimeoutInt), LogLevel: logLevel, StorageFilePath: storageFilePath}, nil
 
 	}
 
