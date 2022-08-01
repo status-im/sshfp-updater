@@ -15,20 +15,26 @@ type repository struct {
 	ctx        context.Context
 }
 
-func NewRepository(token string, domain string) Repository {
+func NewRepository(token string, domain string) (Repository, error) {
 	logrus.Infof("cloudflare: Creating Repository")
 	api, err := cloudflare.NewWithAPIToken(token)
 	if err != nil {
-		logrus.Error(err)
-		return nil
+		logrus.Errorf("cloudflare: token init failure: %s", err)
+		return nil, err
 	}
 
 	id, err := api.ZoneIDByName(domain)
 	if err != nil {
-		logrus.Error(err)
-		return nil
+		logrus.Errorf("cloudflare: zone init failure: %s", err)
+		return nil, err
 	}
-	return &repository{api: api, domainId: id, domainName: domain, ctx: context.Background()}
+	repo := repository{
+		api:        api,
+		domainId:   id,
+		domainName: domain,
+		ctx:        context.Background(),
+	}
+	return &repo, nil
 }
 
 func (r *repository) FindRecords(hostname string, recordType string) ([]cloudflare.DNSRecord, error) {

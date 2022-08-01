@@ -41,7 +41,12 @@ func main() {
 	}
 
 	//Create cloudflare components
-	cloudflare := cloudflare.NewService(cloudflare.NewRepository(config.CloudflareToken, config.DomainName))
+	cfRepo, err := cloudflare.NewRepository(config.CloudflareToken, config.DomainName)
+	if err != nil {
+		logrus.Errorf("Failed to Init CloudFlare: %s", err)
+		os.Exit(1)
+	}
+	cloudflare := cloudflare.NewService(cfRepo)
 
 	//Create buffer to catch output from consul
 	var buf bytes.Buffer
