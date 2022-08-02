@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+/bin
 /sshfp-updater
 
 # Test binary, built with `go test -c`
