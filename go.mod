@@ -1,4 +1,4 @@
-module infra-sshfp-cf
+module sshfp-updater
 
 go 1.18
 

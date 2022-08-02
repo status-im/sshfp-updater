@@ -3,13 +3,13 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"infra-sshfp-cf/cloudflare"
-	"infra-sshfp-cf/config"
-	"infra-sshfp-cf/consul"
-	"infra-sshfp-cf/sshfp"
-	"infra-sshfp-cf/statestore"
 	"os"
 	"os/exec"
+	"sshfp-updater/cloudflare"
+	"sshfp-updater/config"
+	"sshfp-updater/consul"
+	"sshfp-updater/sshfp"
+	"sshfp-updater/statestore"
 	"strings"
 
 	"github.com/sirupsen/logrus"

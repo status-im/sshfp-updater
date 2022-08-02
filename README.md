@@ -23,7 +23,7 @@ It's possible to create json formatted config file (example in `testcfg`)
 
 As it has been designed to work with `consul watches` passing proper .json file
 to STDIN is required. Ex:
-`cat watches.dump | ./infra-sshfp-cf`
+`cat watches.dump | ./sshfp-updater`
 
 ## Current state
 - CloudFlare integration is fully implemented

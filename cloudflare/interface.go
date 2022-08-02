@@ -1,7 +1,7 @@
 package cloudflare
 
 import (
-	"infra-sshfp-cf/sshfp"
+	"sshfp-updater/sshfp"
 
 	"github.com/cloudflare/cloudflare-go"
 )
